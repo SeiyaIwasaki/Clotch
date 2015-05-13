@@ -7,10 +7,10 @@
 // 静電容量・センサ
 const int transPin[] = {0, 2, 4, 6};    // センサとして使用する送信側のピン番号
 const int recievePin[] = {1, 3, 5, 7};  // センサとして使用する受信側のピン番号
-CapacitiveSensor CapSensor[] = {CapacitiveSensor(transPin[0], recievePin[1]),
-                                CapacitiveSensor(transPin[2], recievePin[3])};
-//                                CapacitiveSensor(transPin[4], recievePin[5]),
-//                                CapacitiveSensor(transPin[6], recievePin[7])};
+CapacitiveSensor CapSensor[] = {CapacitiveSensor(transPin[0], recievePin[0]),
+                                CapacitiveSensor(transPin[1], recievePin[1])};
+//                                CapacitiveSensor(transPin[2], recievePin[2]),
+//                                CapacitiveSensor(transPin[3], recievePin[3])};
 const int thresholdH = 100;    // 静電容量しきい値 High
 const int thresholdL = 50;     // 静電容量しきい値 Low
 const int NOISE = 10;
