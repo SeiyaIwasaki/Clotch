@@ -7,9 +7,9 @@ CapacitiveSensor CapSensor[] = {CapacitiveSensor(transPin[0], recievePin[0]),
                                 CapacitiveSensor(transPin[1], recievePin[1]),
                                 CapacitiveSensor(transPin[2], recievePin[2]),
                                 CapacitiveSensor(transPin[3], recievePin[3])};
-const int thresholdH = 100;            // 静電容量しきい値 High
-const int thresholdL = 50;             // 静電容量しきい値 Low
-const int NOISE = 30;
+const int thresholdH = 100;    // 静電容量しきい値 High
+const int thresholdL = 50;     // 静電容量しきい値 Low
+const int NOISE = 30;          // 静電容量センサが拾うノイズの量
 
 // スイッチ
 const int switchNum = 2;           // システムが識別可能なスイッチの種類の数
@@ -184,9 +184,9 @@ void initSwitch(){
     // スイッチ 2 : 470Ω
     switchRange[1][0] = 42;     // min
     switchRange[1][1] = 49;     // max
-    // スイッチ 3 : 680Ω
-    switchRange[2][0] = 61;     // min
-    switchRange[2][1] = 68;     // max
+    // スイッチ 3 : 775Ω （楽曲選択）
+    switchRange[2][0] = 68;     // min
+    switchRange[2][1] = 76;     // max
     // スイッチ 4 : 1kΩ
     switchRange[3][0] = 89;     // min
     switchRange[3][1] = 96;     // max
