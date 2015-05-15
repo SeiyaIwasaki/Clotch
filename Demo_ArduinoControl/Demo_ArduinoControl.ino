@@ -1,27 +1,23 @@
-/* Arduino言語でアナログ入力を記述してみる
-   switchNum = 1 での動作を試してみる */
-
-
 #include <CapacitiveSensor.h>
 
 // 静電容量・センサ
-const int transPin[] = {0, 2, 4, 6};    // センサとして使用する送信側のピン番号
-const int recievePin[] = {1, 3, 5, 7};  // センサとして使用する受信側のピン番号
+const int transPin[] = {2, 4, 6, 8};    // センサとして使用する送信側のピン番号
+const int recievePin[] = {3, 5, 7, 9};  // センサとして使用する受信側のピン番号
 CapacitiveSensor CapSensor[] = {CapacitiveSensor(transPin[0], recievePin[0]),
-                                CapacitiveSensor(transPin[1], recievePin[1])};
-//                                CapacitiveSensor(transPin[2], recievePin[2]),
-//                                CapacitiveSensor(transPin[3], recievePin[3])};
-const int thresholdH = 100;    // 静電容量しきい値 High
-const int thresholdL = 50;     // 静電容量しきい値 Low
-const int NOISE = 10;
+                                CapacitiveSensor(transPin[1], recievePin[1]),
+                                CapacitiveSensor(transPin[2], recievePin[2]),
+                                CapacitiveSensor(transPin[3], recievePin[3])};
+const int thresholdH = 100;            // 静電容量しきい値 High
+const int thresholdL = 50;             // 静電容量しきい値 Low
+const int NOISE = 30;
 
 // スイッチ
-const int switchNum = 2;             // システムが識別可能なスイッチの種類の数
-const int SWITCHES = 18;       // 使用できるスイッチの数 
-int switchRange[SWITCHES][2];  // 各スイッチの電圧範囲（[switchNum][最小値, 最大値]）
-int switchType[switchNum];     // スイッチの種類（0 = 存在しない）
-boolean preTouched[switchNum]; // 前回のタッチ状態
-boolean curTouched[switchNum]; // 今回のタッチ状態
+const int switchNum = 2;           // システムが識別可能なスイッチの種類の数
+const int SWITCHES = 19;           // 使用できるスイッチの数 
+int switchRange[SWITCHES][2];      // 各スイッチの電圧範囲（[switchNum][最小値, 最大値]）
+int switchType[switchNum];         // スイッチの種類（0 = 存在しない）
+boolean preTouched[switchNum];     // 前回のタッチ状態
+boolean curTouched[switchNum];     // 今回のタッチ状態
 
 // バッファ
 const int BUFFER_LENGTH = 5;                    // バッファのサイズ
@@ -79,10 +75,13 @@ void loop() {
     
         /* 電圧を測定（2段階スムージング） */
         Volt[i] = SenseVolt(i);
+//        Serial.print("Volt[");
+//        Serial.print(i);
+//        Serial.print("] : ");
 //        Serial.println(Volt[i]);
     
         /* スイッチが存在するとき */
-        if(switchExist(Volt[i])){
+        if(switchExist(Volt[i], i)){
             /* 静電容量を測定 */
             long Cap = SenseCap(i);
 //            Serial.print("Cap = ");
@@ -110,7 +109,15 @@ void loop() {
         Serial.print(",");
     }
     Serial.println();
+    
+    // センサ系のスムージング用配列のインデックス更新
+    index = (index + 1) % BUFFER_LENGTH;
+    capIndex = (capIndex + 1) % BUFFER_LENGTH;
+    
+//    delay(300);
 }
+
+/*---------------------------------------------------------------------*/
 
 /* 電圧を測定 */
 long SenseVolt(int sp){
@@ -124,30 +131,37 @@ long SenseVolt(int sp){
     return FilterVoltValue;
 }
 
+/*---------------------------------------------------------------------*/
+
 /* 静電容量を測定 */
 long SenseCap(int sp){
     long raw = CapSensor[sp].capacitiveSensor(NOISE);
     cap_buffer1[sp][capIndex] = raw;
-    long FilterCapValue = smoothByMeanFilter(cap_buffer1[sp]);
+    long FilterCapValue = smoothByMeanFilter(cap_buffer1[sp]);      // 一段階スムージング
     
     return FilterCapValue;
 }
 
+/*---------------------------------------------------------------------*/
+
 /* スイッチが取り付けられているかどうか判定する */
-boolean switchExist(int val){
+boolean switchExist(int val, int num){
+    // 全てのスイッチの電圧幅情報と照らし合わせる
     for(int i = 0; i < SWITCHES; i++){
         if(switchRange[i][0] < val && val < switchRange[i][1]){
-            switchType[i] = i + 1;    // スイッチの種類を保存しておく
-            //Serial.println(switchType);
-            return true;           
-        }else{
-            // スイッチが取り付けられていないとき
-            switchType[i] = 0;
+            switchType[num] = i + 1;    // スイッチの種類を保存しておく
+            return true;
         }
     }
     
+    // スイッチが取り付けられていないとき
+    switchType[num] = 0;                // スイッチなし
+    preTouched[num] = false;            // 前回のタッチ情報を"タッチしていない"に
+    curTouched[num] = false;            // 今回のタッチ情報を"タッチしていない"に
     return false; 
 }
+
+/*---------------------------------------------------------------------*/
 
 /* Meanフィルタ(平均化)によるスムージング */
 long smoothByMeanFilter(long *box){
@@ -159,6 +173,8 @@ long smoothByMeanFilter(long *box){
     // その平均を返す
     return (long)(sum / BUFFER_LENGTH);
 }
+
+/*---------------------------------------------------------------------*/
 
 /* 各スイッチの電圧範囲の初期化 */
 void initSwitch(){
@@ -216,4 +232,7 @@ void initSwitch(){
     // スイッチ 18 : 330kΩ
     switchRange[17][0] = 989;    // min
     switchRange[17][1] = 997;    // max
+    // スイッチ 19 : 570kΩ （ピアノ）
+    switchRange[18][0] = 1002;   // min
+    switchRange[18][1] = 1006;   // max
 }
