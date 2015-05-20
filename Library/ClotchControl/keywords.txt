@@ -1,0 +1,18 @@
+﻿#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ClotchControl	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+sensorCalibrate	KEYWORD2
+setupBuffer	KEYWORD2
+senseVolt	KEYWORD2
+senseCap	KEYWORD2
+smoothByMeanFilter	KEYWORD2
+getVolt	KEYWORD2
+getCap	KEYWORD2
+getTouched	KEYWORD2
