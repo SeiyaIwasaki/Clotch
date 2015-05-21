@@ -9,10 +9,16 @@ ClotchControl	KEYWORD1
 #######################################
 
 sensorCalibrate	KEYWORD2
+offAutoCalibrate	KEYWORD2
 setupBuffer	KEYWORD2
+resetThreshold	KEYWORD2
+resetSamplingNum	KEYWORD2
+saveSwitchType	KEYWORD2
 senseVolt	KEYWORD2
 senseCap	KEYWORD2
 smoothByMeanFilter	KEYWORD2
+decideTouched	KEYWORD2
 getVolt	KEYWORD2
+getType	KEYWORD2
 getCap	KEYWORD2
 getTouched	KEYWORD2
